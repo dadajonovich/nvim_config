@@ -27,9 +27,17 @@ return {
 			-- Регистрация LSP-серверов через vim.lsp.config
 			vim.lsp.config("lua_ls", {})
 			vim.lsp.config("vue_ls", {})
+			vim.lsp.config("stylelint_lsp", {
+				filetypes = { "css", "scss" },
+				settings = {
+					stylelintplus = {
+						autoFixOnSave = true,
+					},
+				},
+			})
 
 			-- Автоматическое включение LSP
-			vim.lsp.enable({ "lua_ls", "vue_ls", "vtsls" })
+			vim.lsp.enable({ "lua_ls", "vue_ls", "vtsls", "stylelint_lsp" })
 
 			-- Автокоманды при attach LSP
 			vim.api.nvim_create_autocmd("LspAttach", {
