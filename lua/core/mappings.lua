@@ -40,3 +40,7 @@ map("v", "<C-m-l>", function()
     local var = vim.fn.getreg('"')
     vim.api.nvim_put({"console.log('🤡 ~ ', " .. var .. ");"}, "l", true, true)
 end, "Insert console.log with emoji")
+
+return {
+    map = map
+}
