@@ -1,6 +1,8 @@
 return {{
     "neovim/nvim-lspconfig",
     config = function()
+        local cmp_capabilities = require("cmp_nvim_lsp").default_capabilities()
+
         local vue_language_server_path = vim.fn.stdpath("data") ..
                                              "/mason/packages/vue-language-server/node_modules/@vue/language-server"
         local vue_plugin = {
@@ -20,12 +22,17 @@ return {{
                     }
                 }
             },
-            filetypes = ts_filetypes
+            filetypes = ts_filetypes,
+            capabilities = cmp_capabilities
         })
 
         -- Регистрация LSP-серверов через vim.lsp.config
-        vim.lsp.config("lua_ls", {})
-        vim.lsp.config("vue_ls", {})
+        vim.lsp.config("lua_ls", {
+            capabilities = cmp_capabilities
+        })
+        vim.lsp.config("vue_ls", {
+            capabilities = cmp_capabilities
+        })
         vim.lsp.config("stylelint_lsp", {
             filetypes = {"css", "scss"},
             settings = {
