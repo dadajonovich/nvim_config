@@ -45,20 +45,20 @@ vim.keymap.set("n", "\\", ":split<CR>", vim.tbl_extend("force", opts, {
 }))
 
 -- Tabs / BufferLine
-vim.keymap.set("n", "<Tab>", ":BufferLineCycleNext<CR>", vim.tbl_extend("force", opts, {
+vim.keymap.set("n", "<s-l>", ":BufferLineCycleNext<CR>", vim.tbl_extend("force", opts, {
     desc = "Next buffer"
 }))
-vim.keymap.set("n", "<S-Tab>", ":BufferLineCyclePrev<CR>", vim.tbl_extend("force", opts, {
+vim.keymap.set("n", "<s-h>", ":BufferLineCyclePrev<CR>", vim.tbl_extend("force", opts, {
     desc = "Previous buffer"
 }))
-vim.keymap.set("n", "<leader>x", ":BufferLinePickClose<CR>", vim.tbl_extend("force", opts, {
+vim.keymap.set("n", "<leader>bd", ":BufferLinePickClose<CR>", vim.tbl_extend("force", opts, {
     desc = "Pick buffer to close"
 }))
-vim.keymap.set("n", "<C-x>", ":BufferLineCloseOthers<CR>", vim.tbl_extend("force", opts, {
+vim.keymap.set("n", "<leader>bo", ":BufferLineCloseOthers<CR>", vim.tbl_extend("force", opts, {
     desc = "Close other buffers"
 }))
 
-vim.keymap.set("v", "<c-a-l>", function()
+vim.keymap.set("v", "<c-m-l>", function()
     vim.cmd("normal! y")
     local var = vim.fn.getreg('"')
     vim.api.nvim_put({"console.log('🤡 ~ ', " .. var .. ");"}, "l", true, true)
