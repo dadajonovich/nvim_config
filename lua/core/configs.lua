@@ -30,3 +30,7 @@ vim.opt.fillchars = {
 	foldsep = "│",
 	foldclose = "▸",
 }
+
+-- Spell
+vim.opt.spell = true
+vim.opt.spelllang = { "en", "ru" }
