@@ -18,7 +18,7 @@ vim.keymap.set("n", "<c-s>", ":w<CR>", vim.tbl_extend("force", opts, {
 }))
 
 -- Tree
-vim.keymap.set("n", "<leader>e", ":Neotree right toggle reveal<CR>", vim.tbl_extend("force", opts, {
+vim.keymap.set("n", "<leader>e", ":Neotree toggle reveal<CR>", vim.tbl_extend("force", opts, {
     desc = "Toggle file tree"
 }))
 
@@ -57,3 +57,11 @@ vim.keymap.set("n", "<leader>x", ":BufferLinePickClose<CR>", vim.tbl_extend("for
 vim.keymap.set("n", "<C-x>", ":BufferLineCloseOthers<CR>", vim.tbl_extend("force", opts, {
     desc = "Close other buffers"
 }))
+
+vim.keymap.set("v", "<c-a-l>", function()
+    vim.cmd("normal! y")
+    local var = vim.fn.getreg('"')
+    vim.api.nvim_put({"console.log('🤡 ~ ', " .. var .. ");"}, "l", true, true)
+end, {
+    desc = "Insert console.log with emoji"
+})

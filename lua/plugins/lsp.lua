@@ -35,10 +35,8 @@ return {{
             }
         })
 
-        -- Автоматическое включение LSP
         vim.lsp.enable({"lua_ls", "vue_ls", "vtsls", "stylelint_lsp"})
 
-        -- Автокоманды при attach LSP
         vim.api.nvim_create_autocmd("LspAttach", {
             group = vim.api.nvim_create_augroup("UserLspConfig", {}),
             callback = function(ev)
@@ -69,7 +67,7 @@ return {{
                     desc = "Rename"
                 }))
 
-                vim.keymap.set("n", "<Leader>cf", function()
+                vim.keymap.set("n", "<leader>cf", function()
                     vim.lsp.buf.format({
                         async = true
                     })
