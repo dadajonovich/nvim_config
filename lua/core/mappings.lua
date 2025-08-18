@@ -1,67 +1,42 @@
--- Leader
 vim.g.mapleader = " "
 
--- Общие опции для маппингов
-local opts = {
-    noremap = true,
-    silent = true
-}
+local function map(mode, lhs, rhs, desc, opts)
+    opts = vim.tbl_extend("force", {
+        noremap = true,
+        silent = true,
+        desc = desc
+    }, opts or {})
+    vim.keymap.set(mode, lhs, rhs, opts)
+end
 
 -- Insert
-vim.keymap.set("i", "jj", "<Esc>", vim.tbl_extend("force", opts, {
-    desc = "Escape insert mode"
-}))
+map("i", "jj", "<Esc>", "Escape insert mode")
 
 -- Buffers
-vim.keymap.set("n", "<c-s>", ":w<CR>", vim.tbl_extend("force", opts, {
-    desc = "Save buffer"
-}))
+map("n", "<C-s>", ":w<CR>", "Save buffer")
 
 -- Tree
-vim.keymap.set("n", "<leader>e", ":Neotree toggle reveal<CR>", vim.tbl_extend("force", opts, {
-    desc = "Toggle file tree"
-}))
+map("n", "<leader>e", ":Neotree toggle reveal<CR>", "Toggle file tree")
 
--- Navigation
-vim.keymap.set("n", "<c-k>", ":wincmd k<CR>", vim.tbl_extend("force", opts, {
-    desc = "Move to window up"
-}))
-vim.keymap.set("n", "<c-j>", ":wincmd j<CR>", vim.tbl_extend("force", opts, {
-    desc = "Move to window down"
-}))
-vim.keymap.set("n", "<c-h>", ":wincmd h<CR>", vim.tbl_extend("force", opts, {
-    desc = "Move to window left"
-}))
-vim.keymap.set("n", "<c-l>", ":wincmd l<CR>", vim.tbl_extend("force", opts, {
-    desc = "Move to window right"
-}))
+-- Window navigation
+map("n", "<C-h>", "<C-w>h", "Move to left window")
+map("n", "<C-j>", "<C-w>j", "Move to bottom window")
+map("n", "<C-k>", "<C-w>k", "Move to top window")
+map("n", "<C-l>", "<C-w>l", "Move to right window")
 
 -- Splits
-vim.keymap.set("n", "|", ":vsplit<CR>", vim.tbl_extend("force", opts, {
-    desc = "Vertical split"
-}))
-vim.keymap.set("n", "\\", ":split<CR>", vim.tbl_extend("force", opts, {
-    desc = "Horizontal split"
-}))
+map("n", "|", ":vsplit<CR>", "Vertical split")
+map("n", "\\", ":split<CR>", "Horizontal split")
 
--- Tabs / BufferLine
-vim.keymap.set("n", "<s-l>", ":BufferLineCycleNext<CR>", vim.tbl_extend("force", opts, {
-    desc = "Next buffer"
-}))
-vim.keymap.set("n", "<s-h>", ":BufferLineCyclePrev<CR>", vim.tbl_extend("force", opts, {
-    desc = "Previous buffer"
-}))
-vim.keymap.set("n", "<leader>bd", ":BufferLinePickClose<CR>", vim.tbl_extend("force", opts, {
-    desc = "Pick buffer to close"
-}))
-vim.keymap.set("n", "<leader>bo", ":BufferLineCloseOthers<CR>", vim.tbl_extend("force", opts, {
-    desc = "Close other buffers"
-}))
+-- BufferLine
+map("n", "<S-l>", ":BufferLineCycleNext<CR>", "Next buffer")
+map("n", "<S-h>", ":BufferLineCyclePrev<CR>", "Previous buffer")
+map("n", "<leader>bd", ":BufferLinePickClose<CR>", "Pick buffer to close")
+map("n", "<leader>bo", ":BufferLineCloseOthers<CR>", "Close other buffers")
 
-vim.keymap.set("v", "<c-m-l>", function()
+-- Console.log helper
+map("v", "<C-m-l>", function()
     vim.cmd("normal! y")
     local var = vim.fn.getreg('"')
     vim.api.nvim_put({"console.log('🤡 ~ ', " .. var .. ");"}, "l", true, true)
-end, {
-    desc = "Insert console.log with emoji"
-})
+end, "Insert console.log with emoji")
