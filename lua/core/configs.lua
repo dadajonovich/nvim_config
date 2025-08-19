@@ -19,18 +19,12 @@ vim.opt.scrolloff = 8
 vim.opt.wrap = false
 vim.opt.termguicolors = true
 
--- Fillchars
-vim.opt.fillchars = {
-	vert = "│",
-	fold = "⠀",
-	eob = " ", -- suppress ~ at EndOfBuffer
-	-- diff = "⣿", -- alternatives = ⣿ ░ ─ ╱
-	msgsep = "‾",
-	foldopen = "▾",
-	foldsep = "│",
-	foldclose = "▸",
-}
+local spell_filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" }
 
--- Spell
-vim.opt.spell = true
-vim.opt.spelllang = { "en", "ru" }
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = spell_filetypes,
+	callback = function()
+		vim.opt.spell = true
+		vim.opt.spelllang = { "en", "ru" }
+	end,
+})
