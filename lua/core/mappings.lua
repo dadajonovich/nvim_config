@@ -44,10 +44,11 @@ map("n", "<leader>qa", ":qa<CR>", "Quit all")
 map("n", "<leader>qw", ":wq<CR>", "Save & quit")
 
 -- Console.log helper
+
 map("v", "<C-m-l>", function()
 	vim.cmd("normal! y")
 	local var = vim.fn.getreg('"')
-	vim.api.nvim_put({ "console.log('🤡 ~ ', " .. var .. ");" }, "l", true, true)
+	vim.api.nvim_put({ "console.log('🤡 ~ " .. var .. ":', " .. var .. ");" }, "l", true, true)
 end, "Insert console.log with emoji")
 
 return {
