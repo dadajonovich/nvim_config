@@ -24,11 +24,15 @@ return {
 					},
 				},
 				filetypes = ts_filetypes,
+				capabilities = cmp_capabilities,
 			})
 
-			-- Регистрация LSP-серверов через vim.lsp.config
-			vim.lsp.config("lua_ls", {})
-			vim.lsp.config("vue_ls", {})
+			vim.lsp.config("lua_ls", {
+				capabilities = cmp_capabilities,
+			})
+			vim.lsp.config("vue_ls", {
+				capabilities = cmp_capabilities,
+			})
 			vim.lsp.config("stylelint_lsp", {
 				filetypes = { "css", "scss" },
 				settings = {
@@ -36,10 +40,12 @@ return {
 						autoFixOnSave = true,
 					},
 				},
+				capabilities = cmp_capabilities,
 			})
 
 			vim.lsp.config("css_variables", {
 				filetypes = ts_filetypes,
+				capabilities = cmp_capabilities,
 			})
 
 			vim.lsp.config("cssls", {
@@ -48,6 +54,7 @@ return {
 
 			vim.lsp.config("cssmodules_ls", {
 				filetypes = ts_filetypes,
+				capabilities = cmp_capabilities,
 			})
 
 			local base_on_attach = vim.lsp.config.eslint.on_attach
@@ -63,6 +70,7 @@ return {
 						command = "LspEslintFixAll",
 					})
 				end,
+				capabilities = cmp_capabilities,
 			})
 
 			vim.lsp.enable({
