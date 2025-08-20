@@ -18,6 +18,7 @@ return {
 					"cssls",
 					"css_variables",
 					"cssmodules_ls",
+					"eslint",
 				},
 			})
 		end,

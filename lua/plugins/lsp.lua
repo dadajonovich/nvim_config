@@ -24,16 +24,11 @@ return {
 					},
 				},
 				filetypes = ts_filetypes,
-				capabilities = cmp_capabilities,
 			})
 
 			-- Регистрация LSP-серверов через vim.lsp.config
-			vim.lsp.config("lua_ls", {
-				capabilities = cmp_capabilities,
-			})
-			vim.lsp.config("vue_ls", {
-				capabilities = cmp_capabilities,
-			})
+			vim.lsp.config("lua_ls", {})
+			vim.lsp.config("vue_ls", {})
 			vim.lsp.config("stylelint_lsp", {
 				filetypes = { "css", "scss" },
 				settings = {
@@ -44,7 +39,6 @@ return {
 			})
 
 			vim.lsp.config("css_variables", {
-				capabilities = cmp_capabilities,
 				filetypes = ts_filetypes,
 			})
 
@@ -53,10 +47,34 @@ return {
 			})
 
 			vim.lsp.config("cssmodules_ls", {
-				capabilities = cmp_capabilities,
+				filetypes = ts_filetypes,
 			})
 
-			vim.lsp.enable({ "lua_ls", "vue_ls", "vtsls", "stylelint_lsp", "cssmodules_ls", "css_variables", "cssls" })
+			local base_on_attach = vim.lsp.config.eslint.on_attach
+			vim.lsp.config("eslint", {
+				on_attach = function(client, bufnr)
+					if not base_on_attach then
+						return
+					end
+
+					base_on_attach(client, bufnr)
+					vim.api.nvim_create_autocmd("BufWritePre", {
+						buffer = bufnr,
+						command = "LspEslintFixAll",
+					})
+				end,
+			})
+
+			vim.lsp.enable({
+				"lua_ls",
+				"vue_ls",
+				"vtsls",
+				"stylelint_lsp",
+				"cssmodules_ls",
+				"css_variables",
+				"cssls",
+				"eslint",
+			})
 
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", {}),
