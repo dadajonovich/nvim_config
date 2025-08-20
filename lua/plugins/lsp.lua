@@ -56,6 +56,9 @@ return {
 				filetypes = ts_filetypes,
 				capabilities = cmp_capabilities,
 			})
+			vim.lsp.config("emmet_language_server", {
+				capabilities = cmp_capabilities,
+			})
 
 			local base_on_attach = vim.lsp.config.eslint.on_attach
 			vim.lsp.config("eslint", {
@@ -82,6 +85,7 @@ return {
 				"css_variables",
 				"cssls",
 				"eslint",
+				"emmet_language_server",
 			})
 
 			vim.api.nvim_create_autocmd("LspAttach", {

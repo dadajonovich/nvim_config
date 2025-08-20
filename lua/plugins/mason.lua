@@ -19,6 +19,7 @@ return {
 					"css_variables",
 					"cssmodules_ls",
 					"eslint",
+					"emmet_language_server",
 				},
 			})
 		end,
