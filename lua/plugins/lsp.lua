@@ -43,19 +43,6 @@ return {
 				capabilities = cmp_capabilities,
 			})
 
-			vim.lsp.config("css_variables", {
-				filetypes = ts_filetypes,
-				capabilities = cmp_capabilities,
-			})
-
-			vim.lsp.config("cssls", {
-				capabilities = cmp_capabilities,
-			})
-
-			vim.lsp.config("cssmodules_ls", {
-				filetypes = ts_filetypes,
-				capabilities = cmp_capabilities,
-			})
 			vim.lsp.config("emmet_language_server", {
 				capabilities = cmp_capabilities,
 			})
@@ -81,9 +68,6 @@ return {
 				"vue_ls",
 				"vtsls",
 				"stylelint_lsp",
-				"cssmodules_ls",
-				"css_variables",
-				"cssls",
 				"eslint",
 				"emmet_language_server",
 			})
