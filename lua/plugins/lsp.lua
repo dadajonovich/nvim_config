@@ -47,6 +47,10 @@ return {
 				capabilities = cmp_capabilities,
 			})
 
+			vim.lsp.config("tailwindcss", {
+				capabilities = cmp_capabilities,
+			})
+
 			local base_on_attach = vim.lsp.config.eslint.on_attach
 			vim.lsp.config("eslint", {
 				on_attach = function(client, bufnr)
@@ -70,6 +74,7 @@ return {
 				"stylelint_lsp",
 				"eslint",
 				"emmet_language_server",
+				"tailwindcss",
 			})
 
 			vim.api.nvim_create_autocmd("LspAttach", {

@@ -16,6 +16,7 @@ return {
 					"stylelint_lsp",
 					"eslint",
 					"emmet_language_server",
+					"tailwindcss",
 				},
 			})
 		end,
