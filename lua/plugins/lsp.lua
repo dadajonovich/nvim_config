@@ -1,10 +1,7 @@
 return {
     'neovim/nvim-lspconfig',
     dependencies = {
-        { 'mason-org/mason.nvim', opts = {} },
-        'mason-org/mason-lspconfig.nvim',
-        'WhoIsSethDaniel/mason-tool-installer.nvim',
-        { 'j-hui/fidget.nvim',    opts = {} },
+        { 'j-hui/fidget.nvim', opts = {} },
         'saghen/blink.cmp',
     },
     config = function()
@@ -15,16 +12,15 @@ return {
                     mode = mode or 'n'
                     vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
                 end
-
-                map('grn', vim.lsp.buf.rename, '[R]e[n]ame')
-                map('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
-                map('grr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-                map('gri', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
-                map('grd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
-                map('grD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+                map('<leader>cr', vim.lsp.buf.rename, 'Rename')
+                map('<leader>ca', vim.lsp.buf.code_action, 'Code Action', { 'n', 'x' })
+                map('gr', require('telescope.builtin').lsp_references, 'Goto References')
+                map('gi', require('telescope.builtin').lsp_implementations, 'Goto Implementation')
+                map('gd', require('telescope.builtin').lsp_definitions, 'Goto Definition')
+                map('gD', vim.lsp.buf.declaration, 'Goto Declaration')
                 map('gO', require('telescope.builtin').lsp_document_symbols, 'Open Document Symbols')
                 map('gW', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Open Workspace Symbols')
-                map('grt', require('telescope.builtin').lsp_type_definitions, '[G]oto [T]ype Definition')
+                map('gt', require('telescope.builtin').lsp_type_definitions, 'Goto Type Definition')
                 map('<leader>co', function()
                     vim.lsp.buf.code_action({
                         apply = true,
@@ -33,14 +29,17 @@ return {
                             diagnostics = {},
                         },
                     })
-                end, '[O]rganize Imports', 'n')
+                end, 'Organize Imports', 'n')
+                map('<leader>cd', vim.diagnostic.open_float, 'Show Line Diagnostics')
+                map('[d', vim.diagnostic.goto_prev, 'Previous Diagnostic')
+                map(']d', vim.diagnostic.goto_next, 'Next Diagnostic')
+                map('<leader>xx', vim.diagnostic.setloclist, 'All Diagnostics')
+                map('K', vim.lsp.buf.hover, 'Hover')
+                map('gK', vim.lsp.buf.signature_help, 'Signature Help')
+
 
                 local function client_supports_method(client, method, bufnr)
-                    if vim.fn.has 'nvim-0.11' == 1 then
-                        return client:supports_method(method, bufnr)
-                    else
-                        return client.supports_method(method, { bufnr = bufnr })
-                    end
+                    return client:supports_method(method, bufnr)
                 end
 
                 local client = vim.lsp.get_client_by_id(event.data.client_id)
@@ -70,7 +69,7 @@ return {
                 if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
                     map('<leader>th', function()
                         vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
-                    end, '[T]oggle Inlay [H]ints')
+                    end, 'Toggle Inlay Hints')
                 end
             end,
         })
@@ -89,7 +88,7 @@ return {
             },
         }
 
-        local capabilities = require('blink.cmp').get_lsp_capabilities()
+        local cmp_capabilities = require('blink.cmp').get_lsp_capabilities()
 
         local vue_language_server_path = vim.fn.stdpath("data")
             .. "/mason/packages/vue-language-server/node_modules/@vue/language-server"
@@ -99,54 +98,69 @@ return {
             languages = { "vue" },
             configNamespace = "typescript",
         }
+
         local ts_filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" }
 
-        local servers = {
-            lua_ls = {},
-            vue_ls = {},
-            vtsls = {
-                settings = {
-                    vtsls = { tsserver = { globalPlugins = { vue_plugin } } },
+        vim.lsp.config("vtsls", {
+            settings = {
+                vtsls = {
+                    tsserver = {
+                        globalPlugins = { vue_plugin },
+                    },
                 },
-                filetypes = ts_filetypes,
-
             },
-            stylelint_lsp = {
-                filetypes = { "css", "scss" },
-                settings = { stylelintplus = { autoFixOnSave = true } },
-            },
-            emmet_language_server = {},
-            tailwindcss = {},
-            eslint = {
-
-                on_attach = function(client, bufnr)
-                    if vim.lsp.config.eslint.on_attach then
-                        vim.lsp.config.eslint.on_attach(client, bufnr)
-                    end
-                    vim.api.nvim_create_autocmd("BufWritePre", {
-                        buffer = bufnr,
-                        command = "LspEslintFixAll",
-                    })
-                end,
-            },
-        }
-
-        local ensure_installed = vim.tbl_keys(servers or {})
-        vim.list_extend(ensure_installed, {
-            "lua_ls",
+            filetypes = ts_filetypes,
+            capabilities = cmp_capabilities,
         })
-        require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-        require('mason-lspconfig').setup {
-            ensure_installed = {},
-            automatic_installation = false,
-            handlers = {
-                function(server_name)
-                    local server = servers[server_name] or {}
-                    server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-                    require('lspconfig')[server_name].setup(server)
-                end,
+        vim.lsp.config("lua_ls", {
+            capabilities = cmp_capabilities,
+        })
+        vim.lsp.config("vue_ls", {
+            capabilities = cmp_capabilities,
+        })
+        vim.lsp.config("stylelint_lsp", {
+            filetypes = { "css", "scss" },
+            settings = {
+                stylelintplus = {
+                    autoFixOnSave = true,
+                },
             },
-        }
+            capabilities = cmp_capabilities,
+        })
+
+        vim.lsp.config("emmet_language_server", {
+            capabilities = cmp_capabilities,
+        })
+
+        vim.lsp.config("tailwindcss", {
+            capabilities = cmp_capabilities,
+        })
+
+        local base_on_attach = vim.lsp.config.eslint.on_attach
+        vim.lsp.config("eslint", {
+            on_attach = function(client, bufnr)
+                if not base_on_attach then
+                    return
+                end
+
+                base_on_attach(client, bufnr)
+                vim.api.nvim_create_autocmd("BufWritePre", {
+                    buffer = bufnr,
+                    command = "LspEslintFixAll",
+                })
+            end,
+            capabilities = cmp_capabilities,
+        })
+
+        vim.lsp.enable({
+            "lua_ls",
+            "vue_ls",
+            "vtsls",
+            "stylelint_lsp",
+            "eslint",
+            "emmet_language_server",
+            "tailwindcss",
+        })
     end,
 }
