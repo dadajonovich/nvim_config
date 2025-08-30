@@ -1,15 +1,12 @@
 return {
-	{
-		"nvim-treesitter/nvim-treesitter",
-		config = function()
-			require("nvim-treesitter.configs").setup({
-				ensure_installed = { "lua", "typescript", "javascript", "vue", "markdown" },
-				auto_install = true,
-				highlight = {
-					enable = true,
-					additional_vim_regex_highlighting = false,
-				},
-			})
-		end,
-	},
+    'nvim-treesitter/nvim-treesitter',
+    build = ':TSUpdate',
+    main = 'nvim-treesitter.configs',
+    opts = {
+        ensure_installed = { "lua", "html", "typescript", "javascript", "vue", "markdown" },
+        auto_install = true,
+        highlight = {
+            enable = true,
+        },
+    },
 }

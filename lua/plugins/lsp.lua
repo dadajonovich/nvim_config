@@ -1,127 +1,152 @@
 return {
-	{
-		"neovim/nvim-lspconfig",
-		config = function()
-			local cmp_capabilities = require("cmp_nvim_lsp").default_capabilities()
+    'neovim/nvim-lspconfig',
+    dependencies = {
+        { 'mason-org/mason.nvim', opts = {} },
+        'mason-org/mason-lspconfig.nvim',
+        'WhoIsSethDaniel/mason-tool-installer.nvim',
+        { 'j-hui/fidget.nvim',    opts = {} },
+        'saghen/blink.cmp',
+    },
+    config = function()
+        vim.api.nvim_create_autocmd('LspAttach', {
+            group = vim.api.nvim_create_augroup('my-lsp-attach', { clear = true }),
+            callback = function(event)
+                local map = function(keys, func, desc, mode)
+                    mode = mode or 'n'
+                    vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
+                end
 
-			local vue_language_server_path = vim.fn.stdpath("data")
-				.. "/mason/packages/vue-language-server/node_modules/@vue/language-server"
-			local vue_plugin = {
-				name = "@vue/typescript-plugin",
-				location = vue_language_server_path,
-				languages = { "vue" },
-				configNamespace = "typescript",
-			}
+                map('grn', vim.lsp.buf.rename, '[R]e[n]ame')
+                map('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
+                map('grr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+                map('gri', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
+                map('grd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+                map('grD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+                map('gO', require('telescope.builtin').lsp_document_symbols, 'Open Document Symbols')
+                map('gW', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Open Workspace Symbols')
+                map('grt', require('telescope.builtin').lsp_type_definitions, '[G]oto [T]ype Definition')
+                map('<leader>co', function()
+                    vim.lsp.buf.code_action({
+                        apply = true,
+                        context = {
+                            only = { "source.organizeImports" },
+                            diagnostics = {},
+                        },
+                    })
+                end, '[O]rganize Imports', 'n')
 
-			local ts_filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" }
+                local function client_supports_method(client, method, bufnr)
+                    if vim.fn.has 'nvim-0.11' == 1 then
+                        return client:supports_method(method, bufnr)
+                    else
+                        return client.supports_method(method, { bufnr = bufnr })
+                    end
+                end
 
-			vim.lsp.config("vtsls", {
-				settings = {
-					vtsls = {
-						tsserver = {
-							globalPlugins = { vue_plugin },
-						},
-					},
-				},
-				filetypes = ts_filetypes,
-				capabilities = cmp_capabilities,
-			})
+                local client = vim.lsp.get_client_by_id(event.data.client_id)
+                if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
+                    local highlight_augroup = vim.api.nvim_create_augroup('my-lsp-highlight', { clear = false })
+                    vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
+                        buffer = event.buf,
+                        group = highlight_augroup,
+                        callback = vim.lsp.buf.document_highlight,
+                    })
 
-			vim.lsp.config("lua_ls", {
-				capabilities = cmp_capabilities,
-			})
-			vim.lsp.config("vue_ls", {
-				capabilities = cmp_capabilities,
-			})
-			vim.lsp.config("stylelint_lsp", {
-				filetypes = { "css", "scss" },
-				settings = {
-					stylelintplus = {
-						autoFixOnSave = true,
-					},
-				},
-				capabilities = cmp_capabilities,
-			})
+                    vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
+                        buffer = event.buf,
+                        group = highlight_augroup,
+                        callback = vim.lsp.buf.clear_references,
+                    })
 
-			vim.lsp.config("emmet_language_server", {
-				capabilities = cmp_capabilities,
-			})
+                    vim.api.nvim_create_autocmd('LspDetach', {
+                        group = vim.api.nvim_create_augroup('my-lsp-detach', { clear = true }),
+                        callback = function(event2)
+                            vim.lsp.buf.clear_references()
+                            vim.api.nvim_clear_autocmds { group = 'my-lsp-highlight', buffer = event2.buf }
+                        end,
+                    })
+                end
 
-			vim.lsp.config("tailwindcss", {
-				capabilities = cmp_capabilities,
-			})
+                if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
+                    map('<leader>th', function()
+                        vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
+                    end, '[T]oggle Inlay [H]ints')
+                end
+            end,
+        })
 
-			local base_on_attach = vim.lsp.config.eslint.on_attach
-			vim.lsp.config("eslint", {
-				on_attach = function(client, bufnr)
-					if not base_on_attach then
-						return
-					end
+        vim.diagnostic.config {
+            severity_sort = true,
+            float = { border = 'rounded', source = 'if_many' },
+            underline = { severity = vim.diagnostic.severity.ERROR },
+            signs = true,
+            virtual_text = {
+                source = 'if_many',
+                spacing = 2,
+                format = function(diagnostic)
+                    return diagnostic.message
+                end,
+            },
+        }
 
-					base_on_attach(client, bufnr)
-					vim.api.nvim_create_autocmd("BufWritePre", {
-						buffer = bufnr,
-						command = "LspEslintFixAll",
-					})
-				end,
-				capabilities = cmp_capabilities,
-			})
+        local capabilities = require('blink.cmp').get_lsp_capabilities()
 
-			vim.lsp.enable({
-				"lua_ls",
-				"vue_ls",
-				"vtsls",
-				"stylelint_lsp",
-				"eslint",
-				"emmet_language_server",
-				"tailwindcss",
-			})
+        local vue_language_server_path = vim.fn.stdpath("data")
+            .. "/mason/packages/vue-language-server/node_modules/@vue/language-server"
+        local vue_plugin = {
+            name = "@vue/typescript-plugin",
+            location = vue_language_server_path,
+            languages = { "vue" },
+            configNamespace = "typescript",
+        }
+        local ts_filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" }
 
-			vim.api.nvim_create_autocmd("LspAttach", {
-				group = vim.api.nvim_create_augroup("UserLspConfig", {}),
-				callback = function(ev)
-					vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
+        local servers = {
+            lua_ls = {},
+            vue_ls = {},
+            vtsls = {
+                settings = {
+                    vtsls = { tsserver = { globalPlugins = { vue_plugin } } },
+                },
+                filetypes = ts_filetypes,
 
-					local map = require("core.mappings").map
-					local opts = {
-						buffer = ev.buf,
-					}
+            },
+            stylelint_lsp = {
+                filetypes = { "css", "scss" },
+                settings = { stylelintplus = { autoFixOnSave = true } },
+            },
+            emmet_language_server = {},
+            tailwindcss = {},
+            eslint = {
 
-					-- LSP navigation
-					map("n", "gd", vim.lsp.buf.definition, "Goto Definition", opts)
-					map("n", "gr", vim.lsp.buf.references, "References", opts)
-					map("n", "K", vim.lsp.buf.hover, "Hover", opts)
-					map("n", "gK", vim.lsp.buf.signature_help, "Signature Help", opts)
-					map("n", "<leader>cd", function()
-						vim.diagnostic.open_float(0, {
-							scope = "cursor",
-							focusable = false,
-							close_events = { "CursorMoved", "CursorMovedI", "BufHidden", "InsertCharPre", "WinLeave" },
-						})
-					end, "Show Diagnostics", opts)
+                on_attach = function(client, bufnr)
+                    if vim.lsp.config.eslint.on_attach then
+                        vim.lsp.config.eslint.on_attach(client, bufnr)
+                    end
+                    vim.api.nvim_create_autocmd("BufWritePre", {
+                        buffer = bufnr,
+                        command = "LspEslintFixAll",
+                    })
+                end,
+            },
+        }
 
-					-- Code actions
-					map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, "Code Action", opts)
-					map("n", "<leader>cr", vim.lsp.buf.rename, "Rename", opts)
+        local ensure_installed = vim.tbl_keys(servers or {})
+        vim.list_extend(ensure_installed, {
+            "lua_ls",
+        })
+        require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-					-- Formatting
-					map("n", "<leader>cf", function()
-						vim.lsp.buf.format({
-							async = true,
-						})
-					end, "Format Buffer", opts)
-
-					map("n", "<leader>co", function()
-						vim.lsp.buf.code_action({
-							apply = true,
-							context = {
-								only = { "source.organizeImports" },
-								diagnostics = {},
-							},
-						})
-					end, "Organize Imports")
-				end,
-			})
-		end,
-	},
+        require('mason-lspconfig').setup {
+            ensure_installed = {},
+            automatic_installation = false,
+            handlers = {
+                function(server_name)
+                    local server = servers[server_name] or {}
+                    server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+                    require('lspconfig')[server_name].setup(server)
+                end,
+            },
+        }
+    end,
 }

@@ -1,56 +1,41 @@
 vim.g.mapleader = " "
 
-local function map(mode, lhs, rhs, desc, opts)
-	opts = vim.tbl_extend("force", {
-		noremap = true,
-		silent = true,
-		desc = desc,
-	}, opts or {})
-	vim.keymap.set(mode, lhs, rhs, opts)
-end
+vim.keymap.set("i", "jj", "<Esc>", { desc = "Escape insert mode" })
+vim.keymap.set("n", "<leader>o", "o<Esc>", { desc = "Insert empty line below" })
+vim.keymap.set("n", "<leader>O", "O<Esc>", { desc = "Insert empty line above" })
 
--- Insert
-map("i", "jj", "<Esc>", "Escape insert mode")
-map("n", "<leader>o", "o<Esc>", "Insert empty line below")
-map("n", "<leader>O", "O<Esc>", "Insert empty line above")
+vim.keymap.set("n", "<C-s>", ":w<CR>", { desc = "Save buffer" })
 
--- Buffers
-map("n", "<C-s>", ":w<CR>", "Save buffer")
+vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Move to left window" })
+vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Move to bottom window" })
+vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Move to top window" })
+vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Move to right window" })
 
--- Tree
-map("n", "<leader>e", ":Neotree toggle reveal<CR>", "Toggle file tree")
+vim.keymap.set("n", "|", ":vsplit<CR>", { desc = "Vertical split" })
+vim.keymap.set("n", "\\", ":split<CR>", { desc = "Horizontal split" })
 
--- Window navigation
-map("n", "<C-h>", "<C-w>h", "Move to left window")
-map("n", "<C-j>", "<C-w>j", "Move to bottom window")
-map("n", "<C-k>", "<C-w>k", "Move to top window")
-map("n", "<C-l>", "<C-w>l", "Move to right window")
+vim.keymap.set("n", "<S-l>", ":BufferLineCycleNext<CR>", { desc = "Next buffer" })
+vim.keymap.set("n", "<S-h>", ":BufferLineCyclePrev<CR>", { desc = "Previous buffer" })
+vim.keymap.set("n", "<leader>bd", ":bdelete<CR>", { desc = "Close current buffer" })
+vim.keymap.set("n", "<leader>bp", ":BufferLinePickClose<CR>", { desc = "Pick buffer to close" })
+vim.keymap.set("n", "<leader>bo", ":BufferLineCloseOthers<CR>", { desc = "Close other buffers" })
 
--- Splits
-map("n", "|", ":vsplit<CR>", "Vertical split")
-map("n", "\\", ":split<CR>", "Horizontal split")
+vim.keymap.set("n", "<leader>qq", ":q<CR>", { desc = "Quit window" })
+vim.keymap.set("n", "<leader>qQ", ":q!<CR>", { desc = "Quit without saving" })
+vim.keymap.set("n", "<leader>qa", ":qa<CR>", { desc = "Quit all" })
+vim.keymap.set("n", "<leader>qw", ":wq<CR>", { desc = "Save & quit" })
 
--- BufferLine
-map("n", "<S-l>", ":BufferLineCycleNext<CR>", "Next buffer")
-map("n", "<S-h>", ":BufferLineCyclePrev<CR>", "Previous buffer")
-map("n", "<leader>bd", ":bdelete<CR>", "Close current buffer")
-map("n", "<leader>bp", ":BufferLinePickClose<CR>", "Pick buffer to close")
-map("n", "<leader>bo", ":BufferLineCloseOthers<CR>", "Close other buffers")
-
--- Quit
-map("n", "<leader>qq", ":q<CR>", "Quit window")
-map("n", "<leader>qQ", ":q!<CR>", "Quit without saving")
-map("n", "<leader>qa", ":qa<CR>", "Quit all")
-map("n", "<leader>qw", ":wq<CR>", "Save & quit")
-
--- Console.log helper
-
-map("v", "<C-m-l>", function()
+vim.keymap.set("v", "<C-m-l>", function()
 	vim.cmd("normal! y")
 	local var = vim.fn.getreg('"')
 	vim.api.nvim_put({ "console.log('🤡 ~ " .. var .. ":', " .. var .. ");" }, "l", true, true)
-end, "Insert console.log with emoji")
+end, { desc = "Insert console.log with emoji" })
 
-return {
-	map = map,
-}
+
+vim.api.nvim_create_autocmd('TextYankPost', {
+	desc = 'Highlight when yanking (copying) text',
+	group = vim.api.nvim_create_augroup('my-highlight-yank', { clear = true }),
+	callback = function()
+		vim.hl.on_yank()
+	end,
+})
