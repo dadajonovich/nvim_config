@@ -16,8 +16,9 @@ vim.keymap.set("n", "\\", ":split<CR>", { desc = "Horizontal split" })
 
 vim.keymap.set("n", "<S-l>", ":BufferLineCycleNext<CR>", { desc = "Next buffer" })
 vim.keymap.set("n", "<S-h>", ":BufferLineCyclePrev<CR>", { desc = "Previous buffer" })
-vim.keymap.set("n", "<leader>bd", ":bdelete<CR>", { desc = "Close current buffer" })
-vim.keymap.set("n", "<leader>bp", ":BufferLinePickClose<CR>", { desc = "Pick buffer to close" })
+vim.keymap.set("n", "<leader>bd", function()
+	require("mini.bufremove").delete(0, false)
+end, { desc = "Close current buffer" })
 vim.keymap.set("n", "<leader>bo", ":BufferLineCloseOthers<CR>", { desc = "Close other buffers" })
 
 vim.keymap.set("n", "<leader>qq", ":q<CR>", { desc = "Quit window" })
@@ -31,10 +32,9 @@ vim.keymap.set("v", "<C-m-l>", function()
 	vim.api.nvim_put({ "console.log('🤡 ~ " .. var .. ":', " .. var .. ");" }, "l", true, true)
 end, { desc = "Insert console.log with emoji" })
 
-
-vim.api.nvim_create_autocmd('TextYankPost', {
-	desc = 'Highlight when yanking (copying) text',
-	group = vim.api.nvim_create_augroup('my-highlight-yank', { clear = true }),
+vim.api.nvim_create_autocmd("TextYankPost", {
+	desc = "Highlight when yanking (copying) text",
+	group = vim.api.nvim_create_augroup("my-highlight-yank", { clear = true }),
 	callback = function()
 		vim.hl.on_yank()
 	end,
