@@ -40,4 +40,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
-vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
+
+vim.keymap.set("n", "<leader>xx", vim.diagnostic.setloclist, { desc = "Open diagnostic Quickfix list" })
+vim.keymap.set("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Show Line Diagnostics" })

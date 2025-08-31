@@ -30,8 +30,7 @@ return {
 						},
 					})
 				end, "Organize Imports", "n")
-				map("<leader>cd", vim.diagnostic.open_float, "Show Line Diagnostics")
-				map("<leader>xx", vim.diagnostic.setloclist, "All Diagnostics")
+
 				map("K", vim.lsp.buf.hover, "Hover")
 				map("gK", vim.lsp.buf.signature_help, "Signature Help")
 
@@ -84,7 +83,7 @@ return {
 		vim.diagnostic.config({
 			severity_sort = true,
 			float = { border = "rounded", source = "if_many" },
-			underline = { severity = vim.diagnostic.severity.ERROR },
+			underline = true,
 			signs = true,
 			virtual_text = false,
 		})
