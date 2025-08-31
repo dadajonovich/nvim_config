@@ -12,8 +12,8 @@ return {
 					indicator = {
 						style = "none",
 					},
-					color_icons = false,
-					show_buffer_icons = false,
+					color_icons = true,
+					show_buffer_icons = true,
 					diagnostics = "nvim_lsp",
 					diagnostics_indicator = function(count, level, diagnostics_dict, context)
 						local s = " "

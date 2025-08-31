@@ -1,7 +1,3 @@
--- Adds git related signs to the gutter, as well as utilities for managing changes
--- NOTE: gitsigns is already included in init.lua but contains only the base
--- config. This will add also the recommended keymaps.
-
 return {
 	{
 		"lewis6991/gitsigns.nvim",
@@ -15,7 +11,6 @@ return {
 					vim.keymap.set(mode, l, r, opts)
 				end
 
-				-- Navigation
 				map("n", "]c", function()
 					if vim.wo.diff then
 						vim.cmd.normal({ "]c", bang = true })
@@ -32,12 +27,10 @@ return {
 					end
 				end, { desc = "Jump to previous git [c]hange" })
 
-				-- Actions
-				-- visual mode
-				map("v", "<leader>hs", function()
+				map("v", "<leader>gs", function()
 					gitsigns.stage_hunk({ vim.fn.line("."), vim.fn.line("v") })
 				end, { desc = "git [s]tage hunk" })
-				map("v", "<leader>hr", function()
+				map("v", "<leader>gr", function()
 					gitsigns.reset_hunk({ vim.fn.line("."), vim.fn.line("v") })
 				end, { desc = "git [r]eset hunk" })
 				-- normal mode
@@ -52,9 +45,8 @@ return {
 				map("n", "<leader>gD", function()
 					gitsigns.diffthis("@")
 				end, { desc = "git [D]iff against last commit" })
-				-- Toggles
-				map("n", "<leader>gb", gitsigns.toggle_current_line_blame, { desc = "[T]oggle git show [b]lame line" })
-				map("n", "<leader>gD", gitsigns.preview_hunk_inline, { desc = "[T]oggle git show [D]eleted" })
+				map("n", "<leader>tb", gitsigns.toggle_current_line_blame, { desc = "[T]oggle git show [b]lame line" })
+				map("n", "<leader>tD", gitsigns.preview_hunk_inline, { desc = "[T]oggle git show [D]eleted" })
 			end,
 		},
 	},

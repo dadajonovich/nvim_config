@@ -31,8 +31,6 @@ return {
 					})
 				end, "Organize Imports", "n")
 				map("<leader>cd", vim.diagnostic.open_float, "Show Line Diagnostics")
-				map("[d", vim.diagnostic.goto_prev, "Previous Diagnostic")
-				map("]d", vim.diagnostic.goto_next, "Next Diagnostic")
 				map("<leader>xx", vim.diagnostic.setloclist, "All Diagnostics")
 				map("K", vim.lsp.buf.hover, "Hover")
 				map("gK", vim.lsp.buf.signature_help, "Signature Help")
@@ -88,13 +86,7 @@ return {
 			float = { border = "rounded", source = "if_many" },
 			underline = { severity = vim.diagnostic.severity.ERROR },
 			signs = true,
-			virtual_text = {
-				source = "if_many",
-				spacing = 2,
-				format = function(diagnostic)
-					return diagnostic.message
-				end,
-			},
+			virtual_text = false,
 		})
 
 		local cmp_capabilities = require("blink.cmp").get_lsp_capabilities()
