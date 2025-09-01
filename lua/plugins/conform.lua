@@ -35,7 +35,7 @@ return {
 			css = { "prettier" },
 			scss = { "prettier" },
 			markdown = { "prettier" },
-			json = { "	prettier" },
+			json = { "prettier" },
 		},
 	},
 }
